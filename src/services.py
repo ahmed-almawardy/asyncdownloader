@@ -3,12 +3,17 @@
 import base64
 import hashlib
 from datetime import datetime
-from logging import INFO, FileHandler, StreamHandler, getLogger
+from logging import INFO, FileHandler, StreamHandler, getLogger, Formatter
 
 logger = getLogger('LOG')
 logger.setLevel(INFO)
-logger.addHandler(StreamHandler())
-logger.addHandler(FileHandler('../app.log', mode='a+'))
+formatter = Formatter('%(name)s: %(message)s  [%(asctime)s]')
+stream_handler = StreamHandler()
+file_handler = FileHandler('../app.log', mode='a+')
+stream_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
+logger.addHandler(file_handler)
 
 
 def log_started(started_at):
@@ -18,7 +23,7 @@ def log_started(started_at):
     :param started_at:  datetime.datetime
     :return:
     """
-    logger.info('{0}: Starting app... {1}'.format(logger.name, started_at))
+    logger.info('Starting app...')
 
 
 def log_ended(started_at):
@@ -28,12 +33,9 @@ def log_ended(started_at):
     :param started_at:  datetime.datetime
     :return:
     """
-    logger.info('{0}: Done. at {1}'.format(logger.name, datetime.now()))
+    logger.info('Done.')
     timing = datetime.now() - started_at
-    logger.info('{0}: timing. {1} secs/ms'.format(
-        logger.name,
-        timing.total_seconds(),
-    ))
+    logger.info('timing. (%s) secs/ms', timing.total_seconds())
     line_length = 120
     logger.info('=' * line_length)
 

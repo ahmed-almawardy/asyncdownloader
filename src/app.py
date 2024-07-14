@@ -54,7 +54,8 @@ class AsyncHttpClient(IAsyncHttpClient):
 
     async def get(self: Self, url: str) -> httpx.Response | None:
         """Request url and return response from HTTP resource."""
-        logger.info('{0}: GET {1} HTTP/1.1'.format(logger.name, url))
+        message = 'GET {0} HTTP/1.1'.format(url)
+        logger.info(message)
         return await self.internal_client.get(url)
 
     async def dispatch_downloader(self: Self, url: str, path: str) -> None:
@@ -82,11 +83,8 @@ class AsyncHttpClient(IAsyncHttpClient):
             response_content,
         )
         file_hash = hash_content(response_content)
-        logger.info('{0}:{1} Hash {2}'.format(
-            logger.name,
-            filename,
-            file_hash,
-        ))
+        message = '{0} Hash {1}'.format(filename, file_hash)
+        logger.info(message)
 
     async def download_directory(
         self: Self,
@@ -126,12 +124,8 @@ class App(IApp):
 
     async def download_repo_structure(self: Self) -> None:
         """Proxy method to link with the HttpClient."""
-        logger.info(
-            '{0}: Downloading repo to {1}'.
-            format(
-                logger.name,
-                self.temp_dir,
-            ))
+        message = 'Downloading to repo {0}'.format(self.temp_dir)
+        logger.info(message)
         repo_root_path = os.path.join(BASE_DIR, self.temp_dir)
         await self.async_client.dispatch_downloader(
             self.repo_root_url,

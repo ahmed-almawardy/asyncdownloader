@@ -1,3 +1,5 @@
+"""Module for providing interfaces for app internals structure."""
+
 import abc
 from typing import Self
 
@@ -61,7 +63,9 @@ class IAsyncHttpClient(abc.ABC):
 
 
 class IApp(abc.ABC):
+    """Interface for providing the main structure for application."""
+
     @abc.abstractmethod
     async def download_repo_structure(self: Self) -> None:
-        """Delegate download to async http client"""
+        """Delegate download to async http client."""
         raise NotImplementedError
