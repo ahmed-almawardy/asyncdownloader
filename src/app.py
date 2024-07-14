@@ -14,7 +14,8 @@ import httpx
 
 from src.a_services import save_file
 from src.app_interfaces import IApp, IAsyncHttpClient
-from src.services import hash_content, log_ended, log_started, logger
+from src.logger import logger
+from src.services import hash_content, log_ended, log_started
 from src.settings import BASE_DIR, REPO_ROOT_URL
 
 
