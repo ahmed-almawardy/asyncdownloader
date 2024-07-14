@@ -1,3 +1,8 @@
+"""
+Hardcoded settings for providing constants to the app.
+
+I could have used .env file, but i would like keep it simple.
+"""
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
