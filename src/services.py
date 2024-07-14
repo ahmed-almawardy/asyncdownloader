@@ -27,7 +27,7 @@ def log_ended(started_at: datetime) -> None:
     timing = datetime.now() - started_at
     message = 'timing. ({0}) secs/ms'.format(timing.total_seconds())
     logger.info(message)
-    line_length = 120
+    line_length = 100
     logger.info('=' * line_length)
 
 

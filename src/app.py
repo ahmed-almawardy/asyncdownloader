@@ -8,7 +8,7 @@ import asyncio
 import os
 import tempfile
 from datetime import datetime
-from typing import Self
+from typing import Callable, Self
 
 import httpx
 
@@ -30,7 +30,7 @@ class AsyncHttpClient(IAsyncHttpClient):
 
     def __init__(
         self: Self,
-        http_client: httpx.AsyncClient = httpx.AsyncClient,
+        http_client: Callable[[], httpx.AsyncClient] = httpx.AsyncClient,
     ) -> None:
         """
         Store the http-client-detail as Service.
@@ -53,7 +53,7 @@ class AsyncHttpClient(IAsyncHttpClient):
         """
         await self.internal_client.aclose()
 
-    async def get(self: Self, url: str) -> httpx.Response | None:
+    async def get(self: Self, url: str) -> httpx.Response:
         """Request url and return response from HTTP resource."""
         message = 'GET {0} HTTP/1.1'.format(url)
         logger.info(message)
