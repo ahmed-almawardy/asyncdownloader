@@ -5,8 +5,7 @@ import hashlib
 from datetime import datetime
 from logging import INFO, FileHandler, StreamHandler, getLogger
 
-
-logger = getLogger('APP')
+logger = getLogger('LOG')
 logger.setLevel(INFO)
 logger.addHandler(StreamHandler())
 logger.addHandler(FileHandler('../app.log', mode='a+'))
@@ -19,7 +18,7 @@ def log_started(started_at):
     :param started_at:  datetime.datetime
     :return:
     """
-    logger.info(f'{logger.name}: Starting app... {started_at}')
+    logger.info('{0}: Starting app... {1}'.format(logger.name, started_at))
 
 
 def log_ended(started_at):
@@ -29,9 +28,12 @@ def log_ended(started_at):
     :param started_at:  datetime.datetime
     :return:
     """
-    logger.info(f'{logger.name}: Done. at {datetime.now()}')
+    logger.info('{0}: Done. at {1}'.format(logger.name, datetime.now()))
     timing = datetime.now() - started_at
-    logger.info(f'{logger.name}: timing. {timing.total_seconds()} secs/ms')
+    logger.info('{0}: timing. {1} secs/ms'.format(
+        logger.name,
+        timing.total_seconds(),
+    ))
     line_length = 120
     logger.info('=' * line_length)
 
