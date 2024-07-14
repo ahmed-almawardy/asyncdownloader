@@ -58,7 +58,7 @@ class AsyncHttpClient:
         :return: httpx.Response  of the request
 
         """
-        logger.info(f'{logger.name}: GET {url} HTTP/1.1')
+        logger.info('{0}: GET {1} HTTP/1.1'.format(logger.name, url))
         return await self.internal_client.get(url)
 
     async def dispatch_downloader(self, url, path) -> None:
@@ -77,17 +77,6 @@ class AsyncHttpClient:
                 else:
                     tasks_group.create_task(self.download_directory(row, path))
 
-    async def download(self, url: str, filepath: str) -> None:
-        """Entry Point to the downloader client.
-
-        :param url: str url to repo
-        :param filepath: str the path to save the file to
-        :return:
-
-        """
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        await self.dispatch_downloader(url, filepath)
-
     async def download_file(self, incoming_data: dict, path: str) -> None:
         """Download a single file from url and save it to path.
 
@@ -105,7 +94,11 @@ class AsyncHttpClient:
             response_content,
         )
         file_hash = hash_content(response_content)
-        logger.info(f'{logger.name}: {filename} Hash {file_hash}')
+        logger.info('{0}:{1} Hash {2}'.format(
+            logger.name,
+            filename,
+            file_hash,
+        ))
 
     async def download_directory(self, incoming_data: dict, path=None):
         """Download a nested dirs from url and save it to path.
@@ -147,9 +140,17 @@ class App:
 
     async def download_repo_structure(self):
         """Proxy method to link with the HttpClient."""
-        logger.info(f'{logger.name}: Downloading repo to {self.temp_dir}')
+        logger.info(
+            '{0}: Downloading repo to {1}'.
+            format(
+                logger.name,
+                self.temp_dir,
+            ))
         repo_root_path = os.path.join(BASE_DIR, self.temp_dir)
-        await self.async_client.download(self.repo_root_url, repo_root_path)
+        await self.async_client.dispatch_downloader(
+            self.repo_root_url,
+            repo_root_path,
+        )
 
 
 async def main():
