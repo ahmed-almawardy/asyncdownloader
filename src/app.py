@@ -4,30 +4,33 @@ it is so simple async and written respectively to SOLID/DRY/KISS also it
 is tested, and linter friend
 
 """
-
 import asyncio
 import os
 import tempfile
 from datetime import datetime
+from typing import Self
 
 import httpx
 
-from a_services import save_file
-from services import hash_content, log_ended, log_started, logger
-from settings import BASE_DIR, REPO_ROOT_URL
+from src.a_services import save_file
+from src.app_interfaces import IApp, IAsyncHttpClient
+from src.services import hash_content, log_ended, log_started, logger
+from src.settings import BASE_DIR, REPO_ROOT_URL
 
 
-class AsyncHttpClient:
+class AsyncHttpClient(IAsyncHttpClient):
     """HttpClient is a simple wrapper around httpx/aiohttp(Any Async Client).
 
     to be able to send async requests and download simple raw bytes from
     repo.
-
     """
 
     __slots__ = ('internal_client',)
 
-    def __init__(self, http_client=httpx.AsyncClient):
+    def __init__(
+        self: Self,
+        http_client: httpx.AsyncClient = httpx.AsyncClient,
+    ) -> None:
         """
         Store the http-client-detail as Service.
 
@@ -35,40 +38,27 @@ class AsyncHttpClient:
         """
         self.internal_client = http_client()
 
-    async def __aenter__(self):
+    async def __aenter__(self: Self) -> Self:
         """Applicable as ContextManager.
 
-        :return:
-
+        :return: Self
         """
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self: Self, *exc: tuple) -> None:
         """Clean resources.
 
-        :return:
-
+        :return: None
         """
         await self.internal_client.aclose()
 
-    async def get(self, url: str = None) -> httpx.Response | None:
-        """Request url and return response.
-
-        :param url: str the url to request
-        :return: httpx.Response  of the request
-
-        """
+    async def get(self: Self, url: str) -> httpx.Response | None:
+        """Request url and return response from HTTP resource."""
         logger.info('{0}: GET {1} HTTP/1.1'.format(logger.name, url))
         return await self.internal_client.get(url)
 
-    async def dispatch_downloader(self, url, path) -> None:
-        """Switcher for downloading raw bytes from repo.
-
-        :param url: str the url to request
-        :param path: path of the file
-        :return: None
-
-        """
+    async def dispatch_downloader(self: Self, url: str, path: str) -> None:
+        """Switcher for downloading bytes from repo, delegating downloading."""
         async with asyncio.TaskGroup() as tasks_group:
             response = await self.get(url)
             for row in response.json():
@@ -77,14 +67,12 @@ class AsyncHttpClient:
                 else:
                     tasks_group.create_task(self.download_directory(row, path))
 
-    async def download_file(self, incoming_data: dict, path: str) -> None:
-        """Download a single file from url and save it to path.
-
-        :param incoming_data: dict the container to get the url from
-        :param path: local path to save the file to
-        :return: None
-
-        """
+    async def download_file(
+        self: Self,
+        incoming_data: dict,
+        path: str,
+    ) -> None:
+        """Download a single file from url and save it to the disk."""
         response = await self.get(incoming_data['download_url'])
         # I could have used CHUNK_SIZE=4096. for simplicity used no chunk
         response_content = await response.aread()
@@ -100,14 +88,12 @@ class AsyncHttpClient:
             file_hash,
         ))
 
-    async def download_directory(self, incoming_data: dict, path=None):
-        """Download a nested dirs from url and save it to path.
-
-        :param incoming_data: dict the container to get the url from
-        :param path: local path to save the file to
-        :return: None
-
-        """
+    async def download_directory(
+        self: Self,
+        incoming_data: dict,
+        path: str,
+    ) -> None:
+        """Recursive download directory and subdirectories."""
         file_path = os.path.join(path, incoming_data['name'])
         os.makedirs(file_path, exist_ok=True)
         await self.dispatch_downloader(
@@ -116,17 +102,17 @@ class AsyncHttpClient:
         )
 
 
-class App:
+class App(IApp):
     """Entry point for the application."""
 
     __slots__ = ('async_client', 'temp_dir', 'repo_root_url')
 
     def __init__(
-        self,
+        self: Self,
         async_client: AsyncHttpClient,
         repo_root_url: str,
         temp_dir: str,
-    ):
+    ) -> None:
         """Start app.
 
         :param async_client: httpx.AsyncClient
@@ -138,7 +124,7 @@ class App:
         self.repo_root_url = repo_root_url
         self.temp_dir = temp_dir
 
-    async def download_repo_structure(self):
+    async def download_repo_structure(self: Self) -> None:
         """Proxy method to link with the HttpClient."""
         logger.info(
             '{0}: Downloading repo to {1}'.
@@ -153,7 +139,7 @@ class App:
         )
 
 
-async def main():
+async def main() -> None:
     """Entry to start the application to download raw bytes from repo."""
     async with AsyncHttpClient() as http_client:
         started_at = datetime.now()
