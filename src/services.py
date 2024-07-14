@@ -5,7 +5,6 @@ import hashlib
 from datetime import datetime
 from logging import INFO, FileHandler, StreamHandler, getLogger
 
-from settings import DATE_FORMATE
 
 logger = getLogger('APP')
 logger.setLevel(INFO)
@@ -20,7 +19,7 @@ def log_started(started_at):
     :param started_at:  datetime.datetime
     :return:
     """
-    logger.info(f'{logger.name}: Starting app... {started_at:{DATE_FORMATE}}')
+    logger.info(f'{logger.name}: Starting app... {started_at}')
 
 
 def log_ended(started_at):
@@ -30,8 +29,7 @@ def log_ended(started_at):
     :param started_at:  datetime.datetime
     :return:
     """
-    formated_date = datetime.now().strftime(DATE_FORMATE)
-    logger.info(f'{logger.name}: Done. at {formated_date}')
+    logger.info(f'{logger.name}: Done. at {datetime.now()}')
     timing = datetime.now() - started_at
     logger.info(f'{logger.name}: timing. {timing.total_seconds()} secs/ms')
     line_length = 120
