@@ -6,13 +6,12 @@ import hashlib
 import logging
 from datetime import datetime
 from logging import getLogger
-
 from settings import DATE_FORMATE
 
 logger = getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
-logger.addHandler(logging.FileHandler('app.log', mode='a+',))
+logger.addHandler(logging.FileHandler('../app.log', mode='a+', ))
 
 
 def log_started(started_at):
