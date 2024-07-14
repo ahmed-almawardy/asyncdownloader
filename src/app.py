@@ -1,8 +1,7 @@
 """App using Async Http clients as dependencies in order to download a repo.
 
-it is so simple async and written respectively to SOLID/DRY/KISS also it
-is tested, and linter friend
-
+it is so simple async and written respectively to SOLID/DRY/KISS
+it is tested, and linter friend
 """
 import asyncio
 import os
