@@ -137,7 +137,7 @@ async def main() -> None:
     """Entry to start the application to download raw bytes from repo."""
     async with AsyncHttpClient() as http_client:
         started_at = datetime.now()
-        log_started(started_at)
+        log_started()
         app = App(
             http_client,
             repo_root_url=REPO_ROOT_URL,
