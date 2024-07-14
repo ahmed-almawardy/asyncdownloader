@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 from unittest import mock
 
-from app import AsyncHttpClient
+from src.app import AsyncHttpClient
 from httpx import AsyncClient
 
 
